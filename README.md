@@ -4,6 +4,8 @@ A x-vim-tmux navigator
 
 - It just knows when to handle control to your window manager
 
+## Installation
+
 ## Usage:
 
 (bspwm as example)
