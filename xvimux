@@ -1,0 +1,39 @@
+#!/bin/sh
+keysym=$1
+vim_edge_tmux=${2:-false}
+
+tmux_navigation() {
+  _pane_at_edge() { tmux display -p "#{pane_at_$dir_check}"; }
+  _tmux_navigation() { tmux selectp -$dir_tmux; }
+  local before=$(_pane_at_edge)
+  [ "$before" -eq 1 ] && exit 1 || { _tmux_navigation; exit 0; }
+  [[ "$before" == "$(_pane_at_edge)" ]] && exit 1 || exit 0
+}
+vim_navigation() {
+  xvkbd -xsendevent -text "\C$keysym"
+  _buf_at_edge() { cat ~/.cache/xvimux; }
+  sleep .1;
+  [[ "$(_buf_at_edge)" == 1 ]] && exit 1 || exit 0
+}
+window_is_vim() { [ $(xdotool getwindowfocus getwindowname) == 'nvim' ] || return 1; }
+window_is_tmux() {
+  wid=$(xdotool getwindowfocus)
+  w_pid=$(xprop -id $wid _NET_WM_PID | awk '{print $3}')
+  grand_child_pid=$(pgrep -P $(pgrep -P $w_pid))
+  curr_cmd=$(ps -o cmd= $grand_child_pid)
+  [[ "$curr_cmd" == "tmux"* ]] && return 0 || return 1
+}
+
+case "$keysym" in
+  h) dir_tmux="L"; dir_check="left";;
+  j) dir_tmux="D"; dir_check="bottom";;
+  k) dir_tmux="U"; dir_check="top";;
+  l) dir_tmux="R"; dir_check="right";;
+esac
+
+"$vim_edge_tmux" && tmux_navigation
+
+if $(window_is_vim); then vim_navigation
+elif $(window_is_tmux); then tmux_navigation
+else exit 1;
+fi
