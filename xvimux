@@ -12,16 +12,15 @@ tmux_navigation() {
 vim_navigation() {
   xvkbd -xsendevent -text "\C$keysym"
   _buf_at_edge() { cat ~/.cache/xvimux; }
-  sleep .1;
-  [[ "$(_buf_at_edge)" == 1 ]] && exit 1 || exit 0
+  sleep .1; [[ "$(_buf_at_edge)" == 1 ]] && exit 1 || exit 0
 }
-window_is_vim() { [ $(xdotool getwindowfocus getwindowname) == 'nvim' ] || return 1; }
+window_is_vim() { test $(xdotool getwindowfocus getwindowname) == 'nvim'; }
 window_is_tmux() {
   wid=$(xdotool getwindowfocus)
   w_pid=$(xprop -id $wid _NET_WM_PID | awk '{print $3}')
   grand_child_pid=$(pgrep -P $(pgrep -P $w_pid))
   curr_cmd=$(ps -o cmd= $grand_child_pid)
-  [[ "$curr_cmd" == "tmux"* ]] && return 0 || return 1
+  [[ "$curr_cmd" == "tmux"* ]]
 }
 
 case "$keysym" in
