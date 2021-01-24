@@ -1,9 +1,9 @@
 #!/bin/sh
-keysym=$1
+dir=$1
 vim_edge_tmux=${2:-false}
 
 tmux_navigation() {
-  _pane_at_edge() { tmux display -p "#{pane_at_$dir_check}"; }
+  _pane_at_edge() { tmux display -p "#{pane_at_$tmux_check}"; }
   _tmux_navigation() { tmux selectp -$dir_tmux; }
   local before=$(_pane_at_edge)
   [ "$before" -eq 1 ] && exit 1 || { _tmux_navigation; exit 0; }
@@ -23,11 +23,11 @@ window_is_tmux() {
   [[ "$curr_cmd" == "tmux"* ]]
 }
 
-case "$keysym" in
-  h) dir_tmux="L"; dir_check="left";;
-  j) dir_tmux="D"; dir_check="bottom";;
-  k) dir_tmux="U"; dir_check="top";;
-  l) dir_tmux="R"; dir_check="right";;
+case "$dir" in
+  west)  keysym="h"; dir_tmux="L"; tmux_check="left";;
+  south) keysym="j"; dir_tmux="D"; tmux_check="bottom";;
+  north) keysym="k"; dir_tmux="U"; tmux_check="top";;
+  east)  keysym="l"; dir_tmux="R"; tmux_check="right";;
 esac
 
 "$vim_edge_tmux" && tmux_navigation

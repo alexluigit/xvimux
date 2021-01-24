@@ -10,11 +10,9 @@ A x-vim-tmux navigator
 
 (bspwm as example)
 
-```sh
-xvimux h || bspc node -f west.local
-xvimux j || bspc node -f south.local
-xvimux k || bspc node -f north.local
-xvimux l || bspc node -f east.local
+```
+super + {h,n,e,i}
+	d={west,south,north,east}; xvimux $d || bspc node -f $d
 ```
 
 TODO: edit detail readme
